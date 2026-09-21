@@ -13,7 +13,7 @@ import {
   Sparkles,
   WandSparkles,
 } from 'lucide-react'
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import {
   classifySongs,
   type ClassifiedSong,
@@ -97,6 +97,9 @@ function App() {
   const [copiedGroup, setCopiedGroup] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const artistMemory = useRef(
+    new Map(exampleSongs.map((song) => [song.title, song.artist])),
+  )
 
   const parsedPlaylist = useMemo(
     () => parsePlaylist(playlistText, playlistFormat),
@@ -118,17 +121,31 @@ function App() {
   )
 
   function updatePlaylist(value: string) {
+    const nextSongs = parsePlaylist(value, playlistFormat).songs
+    for (const song of nextSongs) {
+      if (song.artist) artistMemory.current.set(song.title, song.artist)
+    }
     setPlaylistText(value)
     setResults([])
     setError('')
   }
 
   function changeFormat(nextFormat: PlaylistFormat) {
-    setPlaylistText((current) =>
-      current === buildExample(playlistFormat) ? buildExample(nextFormat) : current,
-    )
+    if (nextFormat === playlistFormat) return
+
+    const currentPlaylist = parsePlaylist(playlistText, playlistFormat)
+    if (currentPlaylist.invalidLines.length > 0) {
+      setError('请先修正格式不正确的行，再切换歌曲格式。')
+      return
+    }
+
+    const songs = currentPlaylist.songs.map((song) => {
+      const artist = song.artist || artistMemory.current.get(song.title) || ''
+      if (artist) artistMemory.current.set(song.title, artist)
+      return { ...song, artist }
+    })
+    setPlaylistText(songs.map((song) => formatSong(song, nextFormat)).join('\n'))
     setPlaylistFormat(nextFormat)
-    setResults([])
     setError('')
     setCopiedGroup(null)
   }

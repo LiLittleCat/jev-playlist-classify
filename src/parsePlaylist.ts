@@ -7,13 +7,14 @@ export interface ParsedPlaylist {
   invalidLines: Array<{ line: number; value: string }>
 }
 
-const delimiterPattern = /\s*[-–—]\s+/g
+const delimiterPattern = /\s*[-–—](?:\s+|$)/g
 
 export function formatSong(
   song: Pick<SongInput, 'title' | 'artist'>,
   format: PlaylistFormat,
 ): string {
   if (format === 'title-only') return song.title
+  if (!song.artist) return format === 'artist-title' ? `- ${song.title}` : `${song.title} -`
   if (format === 'artist-title') return `${song.artist} - ${song.title}`
   return `${song.title} - ${song.artist}`
 }
@@ -45,7 +46,7 @@ export function parsePlaylist(
     const secondPart = line.slice(delimiter.index + delimiter[0].length).trim()
     const title = format === 'artist-title' ? secondPart : firstPart
     const artist = format === 'artist-title' ? firstPart : secondPart
-    if (!title || !artist) {
+    if (!title) {
       invalidLines.push({ line: index + 1, value: line })
       return
     }
