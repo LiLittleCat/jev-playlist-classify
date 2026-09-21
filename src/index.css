@@ -54,6 +54,13 @@ h1 em { color: var(--coral); font-weight: 500; }
 h2 { margin: 0; font-family: Georgia, serif; font-weight: 500; font-size: 26px; letter-spacing: -.025em; }
 .text-button { border: 0; background: transparent; display: flex; align-items: center; gap: 6px; cursor: pointer; color: #7c817a; font-size: 11px; }
 .text-button:hover { color: var(--coral); }
+.format-selector { margin-bottom: 17px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.format-selector > span { color: #858980; font-size: 9px; font-weight: 900; letter-spacing: .13em; text-transform: uppercase; }
+.format-selector > div { display: flex; border: 1px solid #cdc8bd; background: #faf8f2; }
+.format-selector button { min-height: 34px; padding: 0 13px; border: 0; border-right: 1px solid #ddd8ce; background: transparent; cursor: pointer; color: #777d77; font-size: 10px; }
+.format-selector button:last-child { border-right: 0; }
+.format-selector button:hover { color: var(--ink); }
+.format-selector button.active { background: var(--ink); color: white; }
 .playlist-input-label { display: block; margin-bottom: 9px; color: #858980; font-size: 10px; letter-spacing: .02em; }
 .playlist-input-label code { color: var(--ink); background: #eeeae1; padding: 2px 5px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
 .playlist-textarea { width: 100%; min-height: 190px; resize: vertical; padding: 16px 18px; border: 1px solid #d4cec3; border-radius: 2px; background: #faf8f2; color: var(--ink); font-family: ui-monospace, SFMono-Regular, Menlo, "Noto Sans Mono CJK SC", monospace; font-size: 12px; line-height: 1.85; transition: border-color .2s, background .2s; }
@@ -126,6 +133,9 @@ footer { height: 72px; padding: 0 clamp(24px, 5vw, 78px); background: var(--ink)
   .hero-section { min-height: 410px; padding: 66px 20px 55px; }
   .hero-section::after { width: 300px; top: 75px; right: -190px; }
   .hero-section::before { display: none; }
+  .format-selector { align-items: flex-start; flex-direction: column; }
+  .format-selector > div { width: 100%; }
+  .format-selector button { flex: 1; padding: 0 7px; }
   h1 { font-size: 56px; }
   .hero-copy { max-width: 88%; font-size: 13px; }
   .hero-stats { gap: 27px; }

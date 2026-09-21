@@ -18,29 +18,40 @@ import {
   classifySongs,
   type ClassifiedSong,
   type Language,
+  type SongInput,
 } from './classify'
-import { parsePlaylist } from './parsePlaylist'
+import {
+  formatSong,
+  parsePlaylist,
+  type PlaylistFormat,
+} from './parsePlaylist'
 
-const starterPlaylist = `晴天 - 周杰伦
-红豆 - 王菲
+const exampleSongs: Array<Pick<SongInput, 'title' | 'artist'>> = [
+  { title: '晴天', artist: '周杰伦' },
+  { title: '红豆', artist: '王菲' },
+  { title: 'Blinding Lights', artist: 'The Weeknd' },
+  { title: 'Hello', artist: 'Adele' },
+  { title: 'Lemon', artist: '米津玄師' },
+  { title: '夜に駆ける', artist: 'YOASOBI' },
+  { title: '좋은 날', artist: 'IU' },
+  { title: '사랑을 했다', artist: 'iKON' },
+  { title: 'Despacito', artist: 'Luis Fonsi' },
+  { title: 'Bailando', artist: 'Enrique Iglesias' },
+  { title: 'La vie en rose', artist: 'Édith Piaf' },
+  { title: 'Dernière danse', artist: 'Indila' },
+  { title: 'Volare', artist: 'Domenico Modugno' },
+  { title: '99 Luftballons', artist: 'Nena' },
+]
 
-Blinding Lights - The Weeknd
-Hello - Adele
+const formatOptions: Array<{ id: PlaylistFormat; label: string; placeholder: string }> = [
+  { id: 'title-artist', label: '歌名 - 歌手', placeholder: '晴天 - 周杰伦' },
+  { id: 'artist-title', label: '歌手 - 歌名', placeholder: '周杰伦 - 晴天' },
+  { id: 'title-only', label: '仅歌名', placeholder: '晴天' },
+]
 
-Lemon - 米津玄師
-夜に駆ける - YOASOBI
-
-좋은 날 - IU
-사랑을 했다 - iKON
-
-Despacito - Luis Fonsi
-Bailando - Enrique Iglesias
-
-La vie en rose - Édith Piaf
-Dernière danse - Indila
-
-Volare - Domenico Modugno
-99 Luftballons - Nena`
+function buildExample(format: PlaylistFormat) {
+  return exampleSongs.map((song) => formatSong(song, format)).join('\n')
+}
 
 const outputDefinitions: ReadonlyArray<{
   id: Language
@@ -77,7 +88,8 @@ async function writeToClipboard(text: string) {
 
 
 function App() {
-  const [playlistText, setPlaylistText] = useState(starterPlaylist)
+  const [playlistFormat, setPlaylistFormat] = useState<PlaylistFormat>('title-artist')
+  const [playlistText, setPlaylistText] = useState(() => buildExample('title-artist'))
   const [apiKey, setApiKey] = useState('')
   const [showKey, setShowKey] = useState(false)
   const [results, setResults] = useState<ClassifiedSong[]>([])
@@ -86,7 +98,10 @@ function App() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
-  const parsedPlaylist = useMemo(() => parsePlaylist(playlistText), [playlistText])
+  const parsedPlaylist = useMemo(
+    () => parsePlaylist(playlistText, playlistFormat),
+    [playlistFormat, playlistText],
+  )
   const validSongs = parsedPlaylist.songs
 
   const resultGroups = useMemo(
@@ -96,10 +111,10 @@ function App() {
         return {
           ...group,
           count: songs.length,
-          text: songs.map((song) => `${song.title} - ${song.artist}`).join('\n'),
+          text: songs.map((song) => formatSong(song, playlistFormat)).join('\n'),
         }
       }),
-    [results],
+    [playlistFormat, results],
   )
 
   function updatePlaylist(value: string) {
@@ -108,8 +123,18 @@ function App() {
     setError('')
   }
 
+  function changeFormat(nextFormat: PlaylistFormat) {
+    setPlaylistText((current) =>
+      current === buildExample(playlistFormat) ? buildExample(nextFormat) : current,
+    )
+    setPlaylistFormat(nextFormat)
+    setResults([])
+    setError('')
+    setCopiedGroup(null)
+  }
+
   function reset() {
-    setPlaylistText(starterPlaylist)
+    setPlaylistText(buildExample(playlistFormat))
     setResults([])
     setError('')
     setCopiedGroup(null)
@@ -194,15 +219,30 @@ function App() {
               <button className="text-button" onClick={reset} type="button"><RotateCcw size={14} /> 重置示例</button>
             </div>
 
+            <div className="format-selector">
+              <span>歌曲格式</span>
+              <div role="group" aria-label="歌曲格式">
+                {formatOptions.map((option) => (
+                  <button
+                    className={playlistFormat === option.id ? 'active' : ''}
+                    key={option.id}
+                    type="button"
+                    onClick={() => changeFormat(option.id)}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+            </div>
             <label className="playlist-input-label" htmlFor="playlist-text">
-              每行一首，格式为 <code>歌名 - 歌手</code>
+              每行一首，当前格式 <code>{formatOptions.find(({ id }) => id === playlistFormat)?.label}</code>
             </label>
             <textarea
               id="playlist-text"
               className="playlist-textarea"
               value={playlistText}
               onChange={(event) => updatePlaylist(event.target.value)}
-              placeholder={'晴天 - 周杰伦\nBlinding Lights - The Weeknd\nLemon - 米津玄師'}
+              placeholder={formatOptions.find(({ id }) => id === playlistFormat)?.placeholder}
               spellCheck={false}
             />
             <div className="parse-summary">

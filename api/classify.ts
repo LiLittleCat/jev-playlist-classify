@@ -31,8 +31,7 @@ function isSong(value: unknown): value is SongInput {
     typeof song.id === 'string' &&
     typeof song.title === 'string' &&
     song.title.trim().length > 0 &&
-    typeof song.artist === 'string' &&
-    song.artist.trim().length > 0
+    typeof song.artist === 'string'
   )
 }
 
@@ -53,7 +52,7 @@ async function classifyBatch(
     songs.map((_, index) => [
       `song_${index}`,
       choice(
-        `What is the primary language of the lyrics for songs[${index}]? Use both the song title and artist identity as evidence. Choose uncertain rather than guessing when the metadata is insufficient.`,
+        `What is the primary language of the lyrics for songs[${index}]? Use the song title and, when present, the artist identity as evidence. Choose uncertain rather than guessing when the metadata is insufficient.`,
         languageCriteria,
       ),
     ]),
