@@ -58,12 +58,26 @@ PORT=3000 npm start
 每行一首歌曲，以带空格的连字符、短破折号或长破折号分隔歌名和歌手：
 
 ```text
-Let's Go Party - 2NE1
-又活了一天 (哈基米版) - 庄东茹（豆芽鱼）
-无可取代 - 弦子
-空城旧梦 - 颜妹
-无赖 - 郑中基
-讲不出再见 - 谭咏麟
+晴天 - 周杰伦
+红豆 - 王菲
+
+Blinding Lights - The Weeknd
+Hello - Adele
+
+Lemon - 米津玄師
+夜に駆ける - YOASOBI
+
+좋은 날 - IU
+사랑을 했다 - iKON
+
+Despacito - Luis Fonsi
+Bailando - Enrique Iglesias
+
+La vie en rose - Édith Piaf
+Dernière danse - Indila
+
+Volare - Domenico Modugno
+99 Luftballons - Nena
 ```
 
 如果一行包含多个分隔符，使用最后一个分隔符拆分歌名和歌手。

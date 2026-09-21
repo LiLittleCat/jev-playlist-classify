@@ -21,12 +21,26 @@ import {
 } from './classify'
 import { parsePlaylist } from './parsePlaylist'
 
-const starterPlaylist = `Let's Go Party - 2NE1
-又活了一天 (哈基米版) - 庄东茹（豆芽鱼）
-无可取代 - 弦子
-空城旧梦 - 颜妹
-无赖 - 郑中基
-讲不出再见 - 谭咏麟`
+const starterPlaylist = `晴天 - 周杰伦
+红豆 - 王菲
+
+Blinding Lights - The Weeknd
+Hello - Adele
+
+Lemon - 米津玄師
+夜に駆ける - YOASOBI
+
+좋은 날 - IU
+사랑을 했다 - iKON
+
+Despacito - Luis Fonsi
+Bailando - Enrique Iglesias
+
+La vie en rose - Édith Piaf
+Dernière danse - Indila
+
+Volare - Domenico Modugno
+99 Luftballons - Nena`
 
 const outputDefinitions: ReadonlyArray<{
   id: Language
@@ -188,7 +202,7 @@ function App() {
               className="playlist-textarea"
               value={playlistText}
               onChange={(event) => updatePlaylist(event.target.value)}
-              placeholder={'Let’s Go Party - 2NE1\n无赖 - 郑中基'}
+              placeholder={'晴天 - 周杰伦\nBlinding Lights - The Weeknd\nLemon - 米津玄師'}
               spellCheck={false}
             />
             <div className="parse-summary">
